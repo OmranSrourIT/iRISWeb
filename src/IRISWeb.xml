@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="mendix.irisweb.IRISWeb" pluginWidget="true" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+        xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>IRISWeb</name>
+    <description>My widget description</description>
+   
+    <properties>
+        <propertyGroup caption="General">
+            <property key="ImageRightvalue" type="attribute" required="true">
+                <caption>attribute Image Right eye</caption>
+                <description>The attribute that contains the Image Right eye value</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                    <attributeType name="Enum"/>
+                    <attributeType name="Integer"/>
+                    <attributeType name="Decimal"/>
+                    <attributeType name="Long"/>
+                </attributeTypes>
+            </property>
+            <property key="ImageLeftvalue" type="attribute" required="true">
+                <caption>attribute Image Left eye</caption>
+                <description>The attribute that contains the Image Left eye value</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                    <attributeType name="Enum"/>
+                    <attributeType name="Integer"/>
+                    <attributeType name="Decimal"/>
+                    <attributeType name="Long"/>
+                </attributeTypes>
+            </property> 
+        </propertyGroup> 
+        <propertyGroup caption="Messages"> 
+            <property key="signaturewebQuailitySuccess" type="textTemplate" required="true">
+                <caption>Message Quaility Success</caption>
+                <description>The value shown when Capture  in high quality</description> 
+            </property>
+            <property key="signaturewebQuailityFailed" type="textTemplate" required="true">
+                <caption>Message Quaility Failed</caption>
+                <description>The value shown when Capture  in low quality</description>
+            </property>
+            <property key="signaturewebTimeout" type="textTemplate" required="true">
+                <caption>Message Quaility Time out</caption>
+                <description>The value shown when Capture Time out</description>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="Events">
+            <property key="onClickAction" type="action" required="true">
+                <caption>On click Save Capture</caption>
+                <description>Action to trigger when button Save Capture is clicked</description>
+            </property>
+         
+            <property key="EnableButtonCapture" type="expression" defaultValue="'false'">
+                <caption>Enable Button Capture</caption>
+                <description>boolean Enable Button Capture</description>
+                <returnType type="String" />
+            </property>
+
+            <property key="EnableButtonSave" type="expression"  defaultValue="'false'">
+                <caption>Enable Button Save</caption>
+                <description>boolean Enable Button Save</description>
+                <returnType type="String" />
+            </property>
+            
+            <property key="EnableButtonVerify" type="expression"  defaultValue="'false'">
+                <caption>Enable Button Verify</caption>
+                <description>boolean Enable Button Verify</description>
+                <returnType type="String" />
+            </property>
+            
+        </propertyGroup>
+        <propertyGroup caption="Quality">
+            <property key="QualityValue" type="string" required="true">
+                <caption>Determine Quaility</caption>
+                <description>The value to Determine quality Image</description>
+            </property>
+            </propertyGroup>
+    </properties>
+</widget>

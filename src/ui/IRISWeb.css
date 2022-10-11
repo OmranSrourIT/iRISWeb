@@ -1,0 +1,387 @@
+.widget-irisweb-clickable {
+    cursor: pointer;
+}
+
+.widget-irisweb {
+    display: inline-block;
+}
+
+.widget-irisweb.badge:empty {
+    display: initial;
+    /* Fix padding to stay round */
+    padding: 3px 10px;
+}
+
+.widget-irisweb.label:empty {
+    display: initial;
+    /* Fix padding to stay square */
+    padding: .2em .8em .3em;
+}
+
+.widget-irisweb.badge {
+    min-width: 18px;
+    min-height: 18px;
+}
+
+
+.borderSstyle {
+    border: 1px solid;
+    border-radius: 25px;
+}
+
+#pageloaddivLeft {
+    position: relative;
+    top: 65px;
+    left: 17px; 
+    width: 100%;
+    height: 100%;
+    background: url(https://www.marcotec-shop.com/pub/static/frontend/Triple/marcotec/en_US/images/loading_small.gif) no-repeat center center;
+    
+}
+
+#pageloaddivRight {
+    top: 65px;
+    left: 17px; 
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: url(https://www.marcotec-shop.com/pub/static/frontend/Triple/marcotec/en_US/images/loading_small.gif) no-repeat center center;
+    
+}
+
+
+
+.img_camera {
+    width: 400px;
+    height: 240px;
+    position: absolute;
+    top: 5px;
+    padding-right: 64px;
+   
+}
+
+button#SaveEyeButton {
+    cursor: pointer;
+    display: flex;
+    color: white !important;
+    background: #1f3646 !important;
+    border-bottom: 3px solid #9e8615 !important;
+    border-radius: 0 !important;
+    margin-bottom: 1px !important;
+    font-size: 18px;
+    font-weight: bold;
+    width: 175px;
+    height: 35px;
+    margin-top: 15px;
+}
+
+button#EyeVeryfiyButton {
+    cursor: pointer;
+    display: flex;
+    color: white !important;
+    background: #1f3646 !important;
+    border-bottom: 3px solid #9e8615 !important;
+    border-radius: 0 !important;
+    margin-bottom: 1px !important;
+    font-size: 18px;
+    font-weight: bold;
+    width: 175px;
+    height: 35px;
+    margin-top: 15px;
+}
+
+
+
+
+button#EyeCaptureButton {
+    display: flex;
+    cursor: pointer;
+    color: white !important;
+    background: #1f3646 !important;
+    border-bottom: 3px solid #9e8615 !important;
+    border-radius: 0 !important;
+    margin-bottom: 1px !important;
+    font-size: 18px;
+    font-weight: bold;
+    width: 175px;
+    height: 35px;
+    margin-top: 15px;
+}
+
+button#SaveEyeButton::after { 
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 18px;
+}
+
+
+button#EyeVeryfiyButton::after {
+    
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+button#buttonBack:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+
+
+button#EyeCaptureButton:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#EyeCaptureButton::after {
+     
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+button#connectButton {
+    cursor: pointer;
+    color: white !important;
+    background: #1f3646 !important;
+    border-bottom: 3px solid #9e8615 !important;
+    border-radius: 0 !important;
+    margin-bottom: 1px !important;
+    font-size: 18px;
+    font-weight: bold;
+    width: 175px;
+    height: 35px;
+}
+
+.panel-default > .panel-heading {
+    direction: rtl;
+    background-color: #1f3646;
+    border-bottom: 3px solid #9e8615;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-orientation: rtl;
+}
+
+.form-control {
+    border: 1px solid #9e8615;
+}
+
+button#saveButton:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#saveButton {
+    background-color: #1f3646;
+    border-bottom: 3px solid #9e8615;
+    font-size: 18px;
+    font-weight: bold;
+    height: 35px;
+    color: white;
+    width: 200px !important;
+}
+
+button#captureButton:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#EyeVeryfiyButton:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor:pointer;
+}
+
+button#SaveEyeButton:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+button#captureButton {
+    background-color: #1f3646;
+    border-bottom: 3px solid #9e8615;
+    font-size: 18px;
+    font-weight: bold;
+    height: 35px;
+    color: white;
+    width: 200px !important;
+}
+
+
+button#SaveImageCapture:hover {
+    opacity: 0.8;
+    color: blanchedalmond;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+button#SaveImageCapture {
+    background-color: #1f3646;
+    border-bottom: 3px solid #9e8615;
+    font-size: 18px;
+    font-weight: bold;
+    height: 35px;
+    color: white;
+    width: 200px !important;
+}
+
+button#connectButton:after {
+    
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 27px;
+}
+
+button#captureButton:after {
+   
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+button#saveButton:after {
+   
+    
+    color: #9e8615;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.alert {
+    padding: 20px;
+    color: white;
+    background-color: #1f3646;
+    border-bottom: 3px solid #9e8615;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .closebtn:hover {
+        color: black;
+        cursor: pointer;
+    }
+
+select#sDevices {
+    direction: rtl;
+    font-size: 18px;
+    margin-top: 15px;
+    font-weight: bold;
+    width: 100%; 
+    box-shadow: 0px 0px 9px 0px;
+}
+
+div#rcorners {
+    border-radius: 10px 10px 0px 0px;
+    border: 2px solid #1f3646;
+    border-bottom: 0px;
+    color: white !important;
+    padding: 20px;
+    width: 281px; 
+    background-color: #1f3646;
+    font-size: 20px;
+}
+
+button#buttonBack {
+    background: #1f3646 !important;
+    border-bottom: 3px solid #9e8615;
+    color: white !important;
+    width: 105px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+}
+ 
+
+.ContainerClas.alert {
+    background-color: #1f3646;
+    text-align: -webkit-center;
+}
+
+.form-horizontal .form-group {
+    margin-right: -15px;
+    margin-left: -100px;
+}
+
+  .header img{
+    float :right;
+}
+ 
+.header {
+    height: 10%;
+    background-color: #1C2932;
+    border-radius: 15px 15px 0 0;
+   
+}
+
+
+.rowIrisEys {
+    display: flex;
+    flex-wrap: wrap;
+    direction: ltr;
+    margin-right: -8px;
+    margin-left: -8px;
+    text-align: -webkit-center;
+    margin-top: 87px;
+    justify-content: center;
+}
+
+div#QialtyHide {
+    display: inline-flex;
+    direction: rtl;
+}
+
+div#QialtyHide2 {
+    display: inline-flex;
+    direction: rtl;
+}
+
+
+.row .IrisQuilty {
+    top: 10px;
+    position: relative;
+}
+
+.SaveCapture{
+    position: relative;
+    left: 10px;
+    top: -6px;
+}
+
+.CheckIris{
+    position: relative;
+    left: 10px;
+    top: -6px;
+}
+
+h3.CheckIris {
+    left: 0px;
+}
