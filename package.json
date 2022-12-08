@@ -10,7 +10,7 @@
   },
   "license": "Apache-2.0",
   "config": {
-    "projectPath": "C:\\\\Users\\\\admin\\\\Documents\\\\Mendix\\\\Test_Integration-main",
+    "projectPath": "C:\\\\Users\\\\admin\\\\Documents\\\\Mendix\\\\ePIS-EmployeePortal-main",
     "mendixHost": "http://localhost:8080",
     "developmentPort": 3000
   },

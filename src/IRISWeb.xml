@@ -30,9 +30,45 @@
                     <attributeType name="Long"/>
                 </attributeTypes>
             </property> 
+
+            <property key="ImageRightvalueSystem" type="attribute" required="true">
+                <caption>Right eye Verify</caption>
+                <description>The attribute that contains the Image Right eye value to Verify</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                    <attributeType name="Enum"/>
+                    <attributeType name="Integer"/>
+                    <attributeType name="Decimal"/>
+                    <attributeType name="Long"/>
+                </attributeTypes>
+            </property>
+            <property key="ImageLeftvalueSystem" type="attribute" required="true">
+                <caption>Left eye Verify</caption>
+                <description>The attribute that contains the Image Left eye value to Verify</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                    <attributeType name="Enum"/>
+                    <attributeType name="Integer"/>
+                    <attributeType name="Decimal"/>
+                    <attributeType name="Long"/>
+                </attributeTypes>
+            </property> 
+
+            <property key="EyesIsMatching" type="attribute" required="true">
+                <caption>Eyes Is Matching</caption>
+                <description>The attribute that contains Eyes Is Matching to Verify</description>
+                <attributeTypes>
+                    <attributeType name="String"/>
+                    <attributeType name="Enum"/>
+                    <attributeType name="Integer"/>
+                    <attributeType name="Decimal"/>
+                    <attributeType name="Long"/>
+                    <attributeType name="Boolean"/>
+                </attributeTypes>
+            </property> 
         </propertyGroup> 
         <propertyGroup caption="Messages"> 
-            <property key="signaturewebQuailitySuccess" type="textTemplate" required="true">
+            <property key="signatureweubQailitySuccess" type="textTemplate" required="true">
                 <caption>Message Quaility Success</caption>
                 <description>The value shown when Capture  in high quality</description> 
             </property>
@@ -50,31 +86,53 @@
                 <caption>On click Save Capture</caption>
                 <description>Action to trigger when button Save Capture is clicked</description>
             </property>
-         
-            <property key="EnableButtonCapture" type="expression" defaultValue="'false'">
+
+            <property key="onClickActionDeliver" type="action" required="true">
+                <caption>On click verfiy</caption>
+                <description>Action to trigger when button verfiy is clicked</description>
+            </property>
+
+            <property key="onClickActionClose" type="action" required="true">
+                <caption>On click Close</caption>
+                <description>Action to trigger when button Close is clicked</description>
+            </property>
+        </propertyGroup>
+        <propertyGroup caption="ButtonHandler">
+            <property key="EnableButtonCapture" type="expression" defaultValue="'true'">
                 <caption>Enable Button Capture</caption>
                 <description>boolean Enable Button Capture</description>
                 <returnType type="String" />
             </property>
 
-            <property key="EnableButtonSave" type="expression"  defaultValue="'false'">
+            <property key="EnableButtonSave" type="expression"  defaultValue="'true'">
                 <caption>Enable Button Save</caption>
                 <description>boolean Enable Button Save</description>
                 <returnType type="String" />
             </property>
             
-            <property key="EnableButtonVerify" type="expression"  defaultValue="'false'">
+            <property key="EnableButtonVerify" type="expression"  defaultValue="'true'">
                 <caption>Enable Button Verify</caption>
                 <description>boolean Enable Button Verify</description>
                 <returnType type="String" />
             </property>
-            
         </propertyGroup>
+            
         <propertyGroup caption="Quality">
             <property key="QualityValue" type="string" required="true">
                 <caption>Determine Quaility</caption>
                 <description>The value to Determine quality Image</description>
             </property>
+            </propertyGroup>
+            <propertyGroup caption="Image Configration"> 
+                <property key="ModuleName" type="textTemplate" required="true">
+                    <caption>Module Name</caption>
+                    <description>The value To path Image from Module Name</description> 
+                </property> 
+
+                <property key="ImageCollection" type="textTemplate" required="true">
+                    <caption>ImageCollection Name</caption>
+                    <description>The value To path Image from ImageCollection Name</description> 
+                </property> 
             </propertyGroup>
     </properties>
 </widget>

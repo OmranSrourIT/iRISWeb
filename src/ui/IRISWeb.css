@@ -32,7 +32,7 @@
 #pageloaddivLeft {
     position: relative;
     top: 65px;
-    left: 17px; 
+    left: 12px; 
     width: 100%;
     height: 100%;
     background: url(https://www.marcotec-shop.com/pub/static/frontend/Triple/marcotec/en_US/images/loading_small.gif) no-repeat center center;
@@ -41,7 +41,7 @@
 
 #pageloaddivRight {
     top: 65px;
-    left: 17px; 
+    left: 12px; 
     position: relative;
     width: 100%;
     height: 100%;

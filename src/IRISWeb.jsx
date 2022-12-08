@@ -1,20 +1,22 @@
 import { Component, createElement } from "react";
-import axios from "axios"; 
+import axios from "axios";
 import "./ui/IRISWeb.css";
 import { AiFillSave } from 'react-icons/ai';
 import { AiFillCamera } from 'react-icons/ai';
-import { AiOutlineCheckCircle } from 'react-icons/ai';
-
+import {useEffect} from 'react';
 export class IRISWeb extends Component {
+ 
     constructor(props) {
         super(props);
         this.state = {
+            WindowsApiUrlCloseDevice_Capture: "http://localhost:1234/api/Home/StopLiveImage_Capture",
             WindowsApiUrlOpenDevice_Capture: "http://localhost:1234/api/Home/OpenDeviceIRIS_Capture",
             WindowsApiUrlIrisCapture: `http://localhost:1234/api/Home/IrisCapture?WhichEye=2&QualityValue=${this.props.QualityValue}`,
+            UrlVerifyCapture: "http://localhost:1234/api/Home/VerifyIRISEyesCapture",
             ShowpageloaddivLeft: false,
             ShowpageloaddivRight: false,
-            ImageIRIS_Right: "./img/Service$ImageIntegration$Iris2Widget.jpg",
-            ImageIRIS_Left: "./img/Service$ImageIntegration$Iris2Widget.jpg",
+            ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
+            ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
             ResponseMessageQuailityEyes: "",
             DivMessgaBox: false,
             QuiltyRight: "",
@@ -23,11 +25,18 @@ export class IRISWeb extends Component {
             QialtyHide: false,
             DeqaIDLeft: false,
             DeqaIDRight: false,
-            ErrorFlag: 'Eyes not Found'
+            ErrorFlag: 'Eyes not Found',
+            ListImageDelvier: [],
+            IS_CAPTURE : false,
+            NonError : false , 
+            BlockedButtonSave : false,
+            BlockedButtonVirfy : false,
         }
         //  this.SaveCaptureEyes = this.onClick.bind(this);
-    }
 
+        this.VerfiyCaptureEyes = this.VerfiyCaptureEyes.bind(this);
+    }
+ 
     OnchangeHandle(event) {
 
         this.setState({
@@ -44,10 +53,22 @@ export class IRISWeb extends Component {
         })
     }
 
-    componentDidMount() {
+    componentWillUnmount()
+    {
+       this.CloseDeviceIRIS();
+    }
 
+    
+      
+    handleTabClose =()=>{
+    alert("ddd");
+    }
+
+
+    componentDidMount() {
+ 
         debugger;
-      //  document.getElementById("EyeCaptureButton").disabled = this.props.value;
+        //  document.getElementById("EyeCaptureButton").disabled = this.props.value;
 
         axios.get(this.state.WindowsApiUrlOpenDevice_Capture)
             .then(response => {
@@ -75,172 +96,21 @@ export class IRISWeb extends Component {
             )
 
     }
-    CaptureEyes() {
-        debugger;
-        this.setState({
-            ShowpageloaddivLeft: true,
-            ShowpageloaddivRight: true,
-            DivMessgaBox: false,
-            ImageIRIS_Right: "./img/Service$ImageIntegration$Iris2Widget.jpg",
-            ImageIRIS_Left: "./img/Service$ImageIntegration$Iris2Widget.jpg",
-            QuiltyRight: "",
-            QuiltyLeft: "",
-            QialtyHide: false,
-            QialtyHide2: false,
-        })
-        axios.get(this.state.WindowsApiUrlIrisCapture)
+
+   CloseDeviceIRIS(){
+      axios.get(this.state.WindowsApiUrlCloseDevice_Capture)
             .then(response => {
-                this.setState({
-                    ShowpageloaddivLeft: false,
-                    ShowpageloaddivRight: false,
-                    ImageIRIS_Left: "",
-                    ImageIRIS_Right: "",
-                    ResponseMessageQuailityEyes: "",
-                    DivMessgaBox: false,
-                    QuiltyRight: "",
-                    QuiltyLeft: "",
-                    QialtyHide: false,
-                    QialtyHide2: false
-                })
+                debugger;
 
-
-
-                if (response.data.length > 0) {
-
-                    if (response.data == this.state.ErrorFlag) {
-                        this.setState({
-                            ResponseMessageQuailityEyes: "كلا العينتين مفقوده",
-                            ShowpageloaddivLeft: false,
-                            ShowpageloaddivRight: false,
-                            DeqaIDLeft: false,
-                            DeqaIDRight: false,
-                            DivMessgaBox: true,
-                            ImageIRIS_Right: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-                            ImageIRIS_Left: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-                            QuiltyRight: "العين اليمين مفقودة",
-                            QuiltyLeft: "العين اليسار  مفقودة",
-                            QialtyHide: true,
-                            QialtyHide2: true,
-                        })
-
-                    } else {
-
-                        if (response.data[0].ImageQuailtyLeft != '0' && response.data[0].ImageQuailtyRight != '0') {
-                           debugger;
-                            if (response.data[0].MessageQuailty == 'Success,High quality') {
-
-                                this.setState({
-                                    ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight,
-                                    ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft,
-                                    QialtyHide: true,
-                                    QialtyHide2: true,
-                                    DivMessgaBox: true,
-                                    ResponseMessageQuailityEyes: this.props.signaturewebQuailitySuccess.value,
-
-
-                                }, () => {
-                                    this.props.ImageRightvalue.setValue(response.data[0].ImageRight);
-                                    this.props.ImageLeftvalue.setValue(response.data[0].ImageLeft);
-                                })
-                                if (response.data[0].ImageQuailtyRight == "110") {
-                                    this.setState({
-                                        DeqaIDRight: false,
-                                        QuiltyRight: "العين اليمنى مفقوده",
-                                        ImageIRIS_Right: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-                                    })
-                                } else {
-                                    this.setState({
-                                        DeqaIDRight: true,
-                                        QuiltyRight: response.data[0].ImageQuailtyRight,
-                                        ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight
-                                    })
-
-                                }
-
-                                if (response.data[0].ImageQuailtyLeft == "110") {
-                                    this.setState({
-                                        DeqaIDLeft: false,
-                                        QuiltyLeft: "العين اليسرى مفقوده",
-                                        ImageIRIS_Left: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-
-                                    })
-                                } else {
-                                    this.setState({
-                                        DeqaIDLeft: true,
-                                        QuiltyLeft: response.data[0].ImageQuailtyLeft,
-                                        ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft
-
-                                    })
-
-                                }
-
-                            } else {
-                                this.setState({
-                                    ImageIRIS_Right: "data:image/png;base64" + response.data[0].ImageRight,
-                                    ImageIRIS_Left: "data:image/png;base64" + response.data[0].ImageLeft,
-                                    QialtyHide: true,
-                                    QialtyHide2: true,
-                                    DivMessgaBox: true,
-                                    ResponseMessageQuailityEyes: this.props.signaturewebQuailityFailed.value
-                                })
-
-                                if (response.data[0].ImageQuailtyRight == "110") {
-                                    this.setState({
-                                        DeqaIDRight: false,
-                                        QuiltyRight: "العين اليمنى مفقوده",
-                                        ImageIRIS_Right: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-                                    })
-
-
-                                } else {
-                                    this.setState({
-                                        DeqaIDRight: true,
-                                        QuiltyRight: response.data[0].ImageQuailtyRight,
-                                        ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight
-                                    })
-
-                                }
-
-                                if (response.data[0].ImageQuailtyLeft == "110") {
-                                    this.setState({
-                                        DeqaIDLeft: false,
-                                        QuiltyLeft: "العين اليسرى مفقوده",
-                                        ImageIRIS_Left: "./img/Service$ImageIntegration$BlocksEysPrint.jpg",
-                                    })
-
-                                } else {
-                                    this.setState({
-                                        DeqaIDLeft: true,
-                                        QuiltyLeft: response.data[0].ImageQuailtyLeft,
-                                        ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft
-                                    })
-                                }
-
-                            }
-
-                        } else {
-                            this.setState({
-                                DivMessgaBox: true,
-                                ShowpageloaddivRight: false,
-                                ShowpageloaddivLeft: false,
-                                ImageIRIS_Right: "./img/Service$ImageIntegration$Iris2Widget.jpg",
-                                ImageIRIS_Left: "./img/Service$ImageIntegration$Iris2Widget.jpg",
-                                QuiltyRight: "",
-                                QuiltyLeft: "",
-                                QialtyHide: false,
-                                QialtyHide2: false,
-                                ResponseMessageQuailityEyes: this.props.signaturewebTimeout.value
-                            })
-
-                        }
-
+                if (response.data == 'Closed Successfuly') {
+                    // alert("تم ايقاف الكاميرا بنجاح");
+                } 
+                else {
+                    if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+                        window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
                     }
 
-
-
-
                 }
-                console.log(response.data)
             }
 
             ).catch(error => {
@@ -250,17 +120,244 @@ export class IRISWeb extends Component {
             }
             )
     }
+    CaptureEyes() {
+ 
+        debugger;
+        this.setState({
+            IS_CAPTURE : true,
+            ShowpageloaddivLeft: true,
+            ShowpageloaddivRight: true,
+            DivMessgaBox: false,
+            ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
+            ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
+            QuiltyRight: "",
+            QuiltyLeft: "",
+            QialtyHide: false,
+            QialtyHide2: false,
+            BlockedButtonSave : true,
+        },()=>{
+        })
+
+            this.props.ImageRightvalue.setValue("");
+            this.props.ImageLeftvalue.setValue("");
+             
+                axios.get(this.state.WindowsApiUrlIrisCapture)
+                .then(response => {
+
+                    this.setState({
+                        BlockedButtonSave : false,
+                    })
+                    
+                    if (response.data.length > 0 && response.data != "IS_ERROR_UNOPEN(-1000000)R100_SDK_Sample_Device_C#") {
+    
+                        this.setState({
+                            ShowpageloaddivLeft: false,
+                            ShowpageloaddivRight: false,
+                            ImageIRIS_Left: "",
+                            ImageIRIS_Right: "",
+                            ResponseMessageQuailityEyes: "",
+                            DivMessgaBox: false,
+                            QuiltyRight: "",
+                            QuiltyLeft: "",
+                            QialtyHide: false,
+                            QialtyHide2: false,
+                            BlockedButtonSave : false,
+                        })
+        
+    
+                        if (response.data == this.state.ErrorFlag) {
+                            debugger;
+                            this.setState({
+                                ResponseMessageQuailityEyes: "كلا العينتين مفقوده",
+                                ShowpageloaddivLeft: false,
+                                ShowpageloaddivRight: false,
+                                DeqaIDLeft: false,
+                                DeqaIDRight: false,
+                                DivMessgaBox: true,
+                                ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                QuiltyRight: "العين اليمين مفقودة",
+                                QuiltyLeft: "العين اليسار  مفقودة",
+                                QialtyHide: true,
+                                QialtyHide2: true,
+                                BlockedButtonSave : false,
+                            },()=>{
+                                this.props.ImageRightvalue.setValue("/9j/4AAQSkZJRgABAQEBLAEsAAD/4QBWRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAITAAMAAAABAAEAAAAAAAAAAAEsAAAAAQAAASwAAAAB/+0ALFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAPHAFaAAMbJUccAQAAAgAEAP/hDIFodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0nYWRvYmU6bnM6bWV0YS8nIHg6eG1wdGs9J0ltYWdlOjpFeGlmVG9vbCAxMS44OCc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczp0aWZmPSdodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyc+CiAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICA8dGlmZjpYUmVzb2x1dGlvbj4zMDAvMTwvdGlmZjpYUmVzb2x1dGlvbj4KICA8dGlmZjpZUmVzb2x1dGlvbj4zMDAvMTwvdGlmZjpZUmVzb2x1dGlvbj4KIDwvcmRmOkRlc2NyaXB0aW9uPgoKIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PScnCiAgeG1sbnM6eG1wTU09J2h0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8nPgogIDx4bXBNTTpEb2N1bWVudElEPmFkb2JlOmRvY2lkOnN0b2NrOjdlOTUyZDVkLTNiNDYtNDc0YS05NGYxLWQ3ZGNmYmY1MTA2ZDwveG1wTU06RG9jdW1lbnRJRD4KICA8eG1wTU06SW5zdGFuY2VJRD54bXAuaWlkOjFmMTNiYmM1LWMyMzgtNGZiYy1hZGM3LTk4MWIzNGJiNDMwNjwveG1wTU06SW5zdGFuY2VJRD4KIDwvcmRmOkRlc2NyaXB0aW9uPgo8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo8P3hwYWNrZXQgZW5kPSd3Jz8+/9sAQwAFAwQEBAMFBAQEBQUFBgcMCAcHBwcPCwsJDBEPEhIRDxERExYcFxMUGhURERghGBodHR8fHxMXIiQiHiQcHh8e/9sAQwEFBQUHBgcOCAgOHhQRFB4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4e/8AAEQgBaAFoAwERAAIRAQMRAf/EAB0AAQABBQEBAQAAAAAAAAAAAAAIAgUGBwkEAQP/xABEEAABAwMBBgEIBwUGBwEAAAAAAQIDBAUGEQcIEiExQVETFCIyQlJhcRUWcoGSorIXYpGx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"); 
+                                this.props.ImageLeftvalue.setValue("/9j/4AAQSkZJRgABAQEBLAEsAAD/4QBWRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAITAAMAAAABAAEAAAAAAAAAAAEsAAAAAQAAASwAAAAB/+0ALFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAPHAFaAAMbJUccAQAAAgAEAP/hDIFodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0nYWRvYmU6bnM6bWV0YS8nIHg6eG1wdGs9J0ltYWdlOjpFeGlmVG9vbCAxMS44OCc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczp0aWZmPSdodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyc+CiAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICA8dGlmZjpYUmVzb2x1dGlvbj4zMDAvMTwvdGlmZjpYUmVzb2x1dGlvbj4KICA8dGlmZjpZUmVzb2x1dGlvbj4zMDAvMTwvdGlmZjpZUmVzb2x1dGlvbj4KIDwvcmRmOkRlc2NyaXB0aW9uPgoKIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PScnCiAgeG1sbnM6eG1wTU09J2h0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8nPgogIDx4bXBNTTpEb2N1bWVudElEPmFkb2JlOmRvY2lkOnN0b2NrOjdlOTUyZDVkLTNiNDYtNDc0YS05NGYxLWQ3ZGNmYmY1MTA2ZDwveG1wTU06RG9jdW1lbnRJRD4KICA8eG1wTU06SW5zdGFuY2VJRD54bXAuaWlkOjFmMTNiYmM1LWMyMzgtNGZiYy1hZGM3LTk4MWIzNGJiNDMwNjwveG1wTU06SW5zdGFuY2VJRD4KIDwvcmRmOkRlc2NyaXB0aW9uPgo8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo8P3hwYWNrZXQgZW5kPSd3Jz8+/9sAQwAFAwQEBAMFBAQEBQUFBgcMCAcHBwcPCwsJDBEPEhIRDxERExYcFxMUGhURERghGBodHR8fHxMXIiQiHiQcHh8e/9sAQwEFBQUHBgcOCAgOHhQRFB4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4e/8AAEQgBaAFoAwERAAIRAQMRAf/EAB0AAQABBQEBAQAAAAAAAAAAAAAIAgUGBwkEAQP/xABEEAABAwMBBgEIBwUGBwEAAAAAAQIDBAUGEQcIEiExQVETFCIyQlJhcRUWcoGSorIXYpGx0QkjU2OToRgkMzaClNJ0/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEB/9oADAMBAAIRAxEAPwCZYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEPt7HeWnpKubCdm1yWOeCThuN4p3Iqsc1ecMK9NdU9J/wD4p3UsRs3da2+UG0+1Nsl7fDR5dSxayxJ6LK1idZYk8feZ26py6RW9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ73v94tzH12zzAa1WvaroLtdIXaK1eaOghcnfs56dOaJ3UuIhwVHrs9yr7Pdaa6Wusmo66llbLBPC/hfG9OiooHQzda290G0+1Nsl7fDR5dSxayxJ6LK1idZYk8feZ26py6Zab0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMe9vu7R5dFU5vhFIyPImNV9bQxoiJcET2mp2mRPx9OuircRBKWOSGV8UrHRyMcrXsc1UVqouioqL0VF7FRSB67Pcq+z3WmulrrJqOupZWywTwv4XxvToqKRXQzda290G061Nsd7fDR5dSxayxJ6LK1idZYk8feZ26py6RW9APyqaiClgdPUzRwxMTVz5HI1qJ8VXkBgGSbcdk2PPdHc89siSN9aOnn85enw0i4lAwG7b32yOiVyUz79ctOi09uVqL/qOaIMaq99fDmqvmmHZBKnbyksEev8AByiJXi/427Fr/wBhXTTx8/i/+Swe2k318Ocqed4dkESd/JywSafxchIVktp3vtkdaqJUvv1t16rUW5XIn+m5wis+xrbjsmyF7Y7ZntkWR3qx1E/mz1+GkvCoGf0tRBVQNnppo5onpq18bkc1U+CpyA/UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMe9vu7R5dFU5vhFI2PImNV9dRRoiJcET2m+Eyfn6ddFW4iCUsckMr4pWPjkY5WvY5qorVRdFRUXoqeBUUgeuz3Kvs91prpaqyairqWVJYJ4X8L43p0VFIreOSb2u1m62qChoqm12eRkLWTVVJSI6aZyJor9XqrWa9dGt5dhCtOZPleTZPULUZHkF0u8irrrWVT5UT5Iq6J9yAWZOSaJyT4FQAAAAAAvNNF5p8QLzjGV5NjFQlRjmQXS0SIuutHVPiRfmiLov3oRW7sB3u9pViWOHIY7fk9K3RHLPH5vUafCSNNFX7TVEKkhsz3pdmOXuipLhWy4xcXqjfI3PRsTnfuzJ6H4uFfgRW8YJop4WTQSslie1HMexyK1yL0VFTqgFYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKBGPe33do8viqc3wikbHkTGq+too0REuCJ7TfCZE/H89FW4iCUsckMr4pWOjkY5WvY5qorVRdFRUXoqL2KikAAALonVUT58gPfarLebs7htVouFevhTUskv6UUispoNkG1OtajqfZ5lDmrzRzrdIxF/EiAe39he17TX9nl//wDXT+oo8Vdsg2p0TVdUbPMoa1OaubbpHp+VFAxa62W82l3DdbRcKBU7VNLJF+pEA8CaL0VF+RUAAADP9le2HPtm9Qz6uXuXzFHavt1VrLSv8fQVfRVfFitUkVM7YlvR4XnL4LTkHDjF9fo1sdRLrTTu/wAuVdNFX3X6L2RXEVv5FRegAAAAAAAAAAAAAAAAAAAAAAAAAAAAADH8+zPHMGxye/ZPc4aCii5Ir11dI7sxjU5vcvgn8uYED9ve8xlefzTWrHZKjHcc4tEiik4ampRF5LLI1eSfuNXTxVxYjeG6PvFMyyKmwbOatrMgY1I6CukXRLgidGPXtN+v7XWD9N7fd2jy+KpzfCKRseRMbx1tFGmiXBE9pvhMifj6ddFWiCUsckMr4pWOjkY5WvY5qorVRdFRUXoqeBUUgAJt7mN42P5Tao7K/CcetuZUcWsnlKZJXVjG9ZonScTkX3mIvLqnLplcSshhigiSOGNkcbU0RrE4UT7kCvsskUUbpJXtYxqaq5y6In3qBbfrFj3lfJfTVr8p7vncev8ADUC5QyRSxpJE9r2OTVHNXVF+9AE0MU0Topo2SxuTRWvTiRfuUDBcr2NbL8nR30zg9klkd1mhp0gl/HHwu/3A0vnO5jiFc2SbEchuVlnXm2GqRKqDXw19F6J8eJQkR32k7uO1LCWy1Mtk+mrfHqq1lpVZ0RPF0eiSN+fDp8S0aiVFRVRUVFRdFRey+BUfAAG+d3/eWynZ6+ns1/dPkGMt0YkMj9ailb/kvcvNE9x3LwVpIqeWA5njmc45BfsYucNfRS8lVi6Ojd3Y9q82OTwX+XMisgAAAAAAAAAAAAAAAAAAAAAAAAAADXm3La3jWynGvpG8Sec3CdHNoLdE5ElqXp+lictXryT4roihzn2sbSMo2l5M+95LWrIrdW0tLGqpBSsX2Y29vi5ea91KjDyoqikfFI2WN7mPYqOa5q6K1U5oqL2X4gdHt0PNM+y/Z01+c2OshWnRraK7zojFuUWnrKxfS4k09fThfrr111y1jDt7fd2jy6KpzfCKRseRMar62ijTRLgiJ6zfCZE/H066KtRBKWOSGV8UrHRyMcrXsciorVRdFRUXoqL2KikD12e5V9nutNdLXWTUddSypLBPC/hfG9OiopFb/wAm3vtpNyxqjtlrp7bZ65kCMrLlFH5SSd/TiY13oR6p1TR3PXRUTkIVo7JssyfJql1RkOQ3W7SOXXWrq3yInyRV0RPgiAWXhb7jfwoBesZyzJ8ZqW1GO5DdbVI1ddaSrfGi/NEXRU+CoBIrZFvg5NaZ4aDaFRtvtBqjXV1NG2KrjTxVqaMk+Xor8VEKmbhGWY9mmPQX7GbpBcbfP6ska82uTq1zV5tcndqoioRV7AaAaw2tbCdne0eOWe7WdtFdXJ6NzoESGo18XaJwyfJ6L9wELdt27hnGzhs9zp41yHH49XLX0kS8cLfGaLmrPtJq3xVC1GlSoAZhsm2kZRs0yZl7xqtWNXaNqqWRVWCqYnsyN7/Byc07L4xXRjYZtbxratjX0jZ5PNrhAjW19ulciy0z1/Uxez05L8FRUSK2GAAAAAAAAAAAAAAAAAAAAAAAAa6297WLHsow911uGlVcajijt1A1+j6mRE7+6xvJXO7dOaqiAc18/wAvv+c5TV5Jklc6rr6lea9GRMTXhjY32WJryT711VVVaiwlR78es11yC80tmslBUXC4VT+CCngZxPev9E6qq8kTmoVOTd43WLLirKfIM+jpr1fU0kiotOOko17aovKV6eK+ii9EXTiMiS7URqaImiBX0CMe9vu7R5dFU5vhFI2PImNV9bRRoiJcUT2m+EyJ+Pp10VbiIJSxyQyvilY+ORjla9jmqitVF0VFReip4FRSAAAAAADPth+1TIdlmWx3e0SumoZXNbcLe5+kVVGnZfdenPhd1RfFFVFiumWCZVZs0xO35NYKlKi310SSRu00c1ejmOTs5qoqKnZUIq9gAPioipoqaooEaN4bdYsuVMqcgwGOmst9XWSWiROCkrF6roiconr4p6Kr1RPWCIN5BZrrj95qrNe6Cot9wpH+Tnp52cL2L/ReqKnJU5pqaHgCL9gGX3/BsppMkxuudSV9MvJerJWL60b2+0xe6femioipFdKNge1ix7V8PbdbfpTXGn4Y7jQOfq+mkVO3vMdzVru/TqioRWxQAAAAAAAAAAAAAAAAAAAAAMb2l5pZcBwyvyi/T+TpKRmqMbpxzSLybGxO7nLyT+K8kUDmLta2gX3aTmlXk1+l/vJfQp6drlWOlhRV4YmfBNea91VVXqVGJFRfcCxK/ZvlFJjeN0Lqy4VTvRb0bG1PWke72WJ3X+aqiLFdG93zYrjuyiwI2nayvv8AUxolfc3s0c/v5ONF9SNF7dV6rry0itpgAAACMe9vu7R5dFU5vhFI2PImNV9bRRoiJcET2m+Eyfn6ddFW4iCUsckMr4pWOjkY5WvY5qorVRdFRUXoqL2KikAAAAAAEo/7P7aNLaczqtntfUL5heGuqKFrl5R1TG6uRPDjYi/exPEi4nQRQAAA1ZvBbFcd2r2FW1DWUF/po1SgubGauZ38nIievGq9uqdU056hzkzzEr9hGUVeN5JQuo7hSu9Jq82yNX1Xsd7TF7L/ACVFQqLEVGW7JdoF92bZpS5NYZf7yL0Kinc5UjqoVX0on/BdOS9l0VOhFdOtmmaWXPsMoMosM/lKSrZqrHaccMicnRvTs5q8l/inJUIrJAAAAAAAAAAAAAAAAAAAApkeyON0kjmsY1NXOcuiIniqgc497jbA/aZnK2+01CrjFnkdHQo1fRqZOj6hU769G+DeftKXEaSKi44zY7pkl/orDZKOSsuNdMkNPCzq5y/yRE1VVXkiIqqQdKd3XY9Ztk+JJSxJFV32sa11zr0bzkd/hs15pG3snfmq815RptEAAAAUTSMihfLI5GsYiucq9kTmoEcN2jeUo86vVRieWugorvLUyLaqjk2OsjV6qyJeySo3RE99E97qR5d7bd2jy+KpzfCKRseRMar62ijTRLgie03wmT8/Troq0QSmjkhlfFKx0cjHK17XNVFaqLoqKi9FTwKikAAAAALzg18nxnNLLkNM5Wy22vhqk07ox6KqfJU1T7yK63wSMlhbLG5HMe1HNVO6LzQiqwAAABq7eJ2PWfaxiTqWVIqS+0bXOtlerecbv8N+nNY3d07dU5pzDmtk1jumN3+tsN7o5KK40Myw1EL+rXJ/NFTRUVOSoqKhUW4qN27o22B+zPOUt92qFTGLxI2OuRy+jTSdGVCJ206O8W8/ZQi46ORPZLG2SNzXsciK1zV1RUXuikVUAAAAAAAAAAAAAAAAAANOb4/1w/YTefqh15fSnk9fK+Zc/K8Gn3cX7nEBzX+X+xpkAlt/Z1/Ur6avvnOn1x4E818tpw+Z8uPyX73F6/fh4dOXERcTVIoAAAALVl/lPqpd/Jf9TzGfg+fk3aAcioJHxLHJE9zHs4XNc1dFaqc0VF7KVE6t0feKZlkVNg2c1bWZA1Ejoa+RdEuCJ0Y9e036/tdYK97bd2jy+KpzfCKRseRMar62ijTRLgidXNTtMifj6ddFVggnLHJDK+KVjo5GOVr2OaqK1UXRUVF6Ki9jSKQAAAB8d6jvsr/Iiuu+H+U+qlp8r/1PMYOP5+TbqRV1AAAAACFX9op9Svpqx+bafXHgXzryOnD5nz4PK/vcXqd+Hi15cJcREkqAHSjc4+uH7CbP9b+vP6L8pr5XzLl5Lj1+/h/c4TLWNxgAAAAAAAAAAAAAAAAACmRjJI3RyNa9jk0c1yaoqeCoBzj3uNj79mecrcLVTqmMXiR0lCrU9Gmk6vp1Xtp1b4t5eypcRpIqLjjN7umN3+ivtkrJKK40MyTU8zOrXJ/NFTVFReSoqopFdKd3XbDZtq+JNqolipL7Rta250CO5xu/xGa81jd2Xt0XmnOK2iAAAAKJo2SwvikajmPRWuRe6LyUDkhnNjnxnNL1j1Q1Wy22vmpl17ox6oi/JU0X7y4i0RSPikbJG9zHsVHNc1dFaqc0VFTopUTq3R94pmWRU2DZzWNZkLUSOhr5F0S4InRj17Tfr+11yuKt7fd2jy+KpzfCKRseRMar62ijRES4IntN8Jk/P066KtwQTljkhlfFKx0cjHK17HNVFaqLoqKi9FRexUUgAAF5wWxz5Nmllx6narpblXw0yadke9EVfkiar9xFdb4I2RQtijajWMRGtROyJyQiqwAAABq7eJ2w2bZRiTqqVYqu+1jXNtlArucjv8R+nNI29179E5ryDmtk17umSX+tvt7rJK2410yzVEz+rnL/ACRE0RETkiIiJ0Ki3FRu3dG2Pv2mZylwutOq4xZ5GyVyuT0amTqynT59XeDeXtIRcdHImMijbHG1rWNREa1qaIiJ2RCKqAAAAAAAAAAAAAAAAAAADG9peF2XPsMr8Xv0HlKSrZoj26ccMic2yMXs5q80/gvJVA5i7Wtn992bZpV4zfov7yL06eoa1UjqoVVeGVnwXTmnZUVF6FRiRUX3A8tv2EZRSZJjdc+juFK70XJzbI1fWY9vtMXui/7KiKRXRvd821Y7tXsKOp3MoL/TRotfbHv1czt5SNV9eNV79U6Lpy1itpgAAACC/wDaAbOZbTmdNtCoKdfo+8NbT1zmt5R1TG6NVfDjYifexfEuIi4VFUT3xSNkje5j2Kjmuauioqc0VFTooE6t0feKZlkdNg2c1jWZC1EjoK6RdEuCJ0Y9e036/tdcrire23do8viqc3wikazImNV9bRRoiJcET2m+Eyfn6ddFW4IJyxyQyvilY+ORjla9jmqitVF0VFReip4FRSAAkVuBWKx3LbJNdLnX0zK610TpLbRyLo+aR+rXSN15LwM4uXX00Xoik1cdASKAAAGrN4LbVjuyiwq6ocyvv9TGq0FsY/Rz+3lJFT1I0Xv1XomvPQOcmeZbfs3yiryTJK59ZcKp3pOXk2NqeqxjfZYnZE/3VVUqLEVGW7Jdn992k5pS4zYYv7yX06ioc1VjpYUX0pX/AATsndVRE6kV062aYXZcBwygxewweTpKRmivdpxzSLzdI9e7nLzX+CckQiskAAAAAAAAAAAAAAAAAAAAAA11t72T2Pavh7rVcNKa40/FJbq9rNX00ip395juSOb369URQOa+f4hf8GymrxvJKF1JX0y806slYuvDIx3tMXTkv3LoqKhUWEqPfj15uuP3mlvNkr6i33ClfxwVED+F7F/ovRUXkqcl1CpybvG9PZcqZT4/n0lNZb6ukcVbrwUlYvRNVXlE9fBfRVeip6pkqS7VRyaouqBX0ABZM7xazZpidwxm/wBMlRb66JY5Goujmr1a9q9nNVEVF7KgHM3bhsryLZZlslou8TpqGVznW+4NZpFVRp3/AHXp7TOqL4oqKtxGAlRVFI+KRskb3MexUc1zV0VqpzRUVOigTq3R94pmWR02DZzVtZkLGpHQV0i6JcETox69pv1/a65XFe9tu7R5fFU5vhFI1mRMar62ijRES4IntN8Jk/P89FW4IJSxyQyvilY6ORjla9jmqitVF0VFReiovYqKQPXZ7lX2e6010tdZNR11LK2WCeF/C+N6dFRQOhm61t7oNp9qbZL2+Gjy6lj1liT0WVrE6yxJ4+8zt1Tl0y03oB8VURNVXREAjRvDb09lxVlTj2AyU16vqaxy1qLx0lGvRdFTlK9PBPRReqrpwhKg3kF5uuQXmqvN7r6i4XCrfxz1E7+J71/onRETkickNDwBF+wDEL/nOU0mN43Quq6+pXknRkTE9aR7vZYndfuTVVRFiulGwPZPY9lGHttVv0qbjUcMlxr3M0fUyInb3WN5o1vbr1VVIrYoAAAAAAAAAAAAAAAAAAAAAAABrzblskxratjX0deI/NrhAjnUFxiaiy0z1/Uxe7F5L8F0VA5z7WNm+UbNMmfZMloljV2rqWqjRVgqmJ7cbu/xavNO6FRh5UAN1bEN4/ONnDYbZUyLkOPx6NSgq5V44W+EMvNWfZXVvgiEippbJNu2zzaPHHBabw2iurkTitleqQ1Gvg3VeGT5sVfjoRWz0AAWTN8Tx/M8eqLBk1sguNvn9aORObXJ0c1yc2uTs5FRUAhltd3PsltM81fs9rG32g1VzaGpkbFVxp4I5dGSfP0V+ClqRHXJsTyfGal1PkOPXW1SNXTSrpHxovyVU0VPiigWeKVYpGyRy8D2Kjmua/RWqnNFRU6KBPnc524XTOrc3E8spa2a70kX/L3VKd7oquNqdJXomjZUTuvJ/wBrrDHk3t93aPL4qnN8IpGx5ExqvraKNNEuCJ7TfCZE/H066KtEEpY5IZXxSsdHIxytexzVRWqi6KiovRU8CopA9dmuVfZ7rTXS11k1HXUsrZYJ4X8L43ovJyL4kVNrZ1vgYs7Z06pzeGqjyajRInU1FT8SV66cpGLybH09JHKmi9NUXREK0Jtu3j842jtntlPIuPY/Jq1aCklXjmb4TS8lf9lNG+KKINKlQAzDZNs3yjaXkzLJjVEsit0dVVUiKkFKxfbkd2+DU5r2QiujGwzZJjWynGvo6zx+c3CdGur7jK1ElqXp+lidmJyT4rqqxWwwAAAAAAAAAAAAAAAAAAAAAAAAAAx/PsMxzOccnsOT2yGvopeaI9NHRu7PY5ObHJ4p/ICBu3/dpynZ6+ovNgbPkGMt1cs0bNailb/msanNE99vLxRpajQxUAPqKqKioqoqLqip2XxA27s13jtqWEtjpor39NW6PREo7sizoieDZNUkb8uLT4EipEYNvnYjXMZDl2PXKyzrojpqVUqoNfHT0Xonw0UkK3Rim2XZfk6N+hs4sksjukM1QkEq/wDhJwu/2Cs6hminiSSGRkkbk1RzF4kX70ASxxSxujlY17HJorXJqi/coFt+ruPeV8r9C2vynveaR6/x0AuUMccUaMiY1jGpojWpoifcgH172NTV7kamunPkBGXe33do8viqc3wikbHkTGq+too00S4IntN8Jk/P066KtRBKWOSGV8UrHRyMcrXsciorVRdFRUXoqL2KikAAAAb53f8AdpynaE+nvF/bPj+Mu0ck0jNKiqb/AJLHJyRffdy58kcSqnlgOGY5g2OQWHGLZDQUUXNUYmrpHd3vcvN7l8V/kRWQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFTUDQO23dcwvOHz3bH+HGL7Jq50lPFrTTu/zIk00VfeZovdUcBDHapsdz7ZvUP+sdkl8xR2jLjS6y0r/D00T0VXwejVKjACoAAC6L1RF+fMD32q9Xm0u4rVd7hQL401VJF+lUIrKaDa/tTomo2n2h5Q1qckR1xken5lUD2/t02vaaftDv8A/wCwn9BB4q7a/tTrWq2o2h5Q5q8lRtxkYn5VQDGLhfr5cZmz3C9XOsla5HNfPVySORU6Kiucuip4gTb3R94pmWR02DZzWNZkLUSOhr5F0S4InRj17Tfr+11hire23do8viqc3wikbHkTGq+too0REuKJ7TfCZPz9OuircEE5Y5IZXxSsfHIxytexzVRWqi6KiovRU8CopAASq3Fcd2R36ulW90y1ubUrllgpbgrXU6xIuqSQM00c9vtcWqp1TlzIuJwoiJ0IoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKJ4Yp4XwzxsljkarXse1Fa5F6oqL1QDR20zda2Y5c6Wrt9FLjFxfqvlrZo2JzvF0K+h+HhX4gRvz3dE2lWJ0k2PyW/J6VuqtSCTzeo0+Mci6a/JylqRpHJ8UybGKhafI8fulokRdNKylfEi/JVTRfuUCzJzTVOafAqAAAAAAVRyPhkbKx7o3scjmvR3CqKi8lReykE+NzjbjdM7tyYnlVNWT3eji/uLq2BzoquNqdJXonC2VETquiP+11i48m9vu7R5dFU5vhFI2PImNV9bRRoiJcET2m+Eyfn6ddFW4IJSxyQyvilY6ORjla9jmqitVF0VFReiovYqKQPXZ7lX2e6010tdZNR11LK2WCeF/C+N6dFRSDoZutbe6Dafam2S9vho8upY9ZYk9FlaxOssSePvM7dU5dI03oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+VVTU9VA6CphjmiemjmSNRzVT4ovIDAMk2HbJsge6S54FZFkd60lPB5s9fjrErVAwG7boOyOsVy0zL9bdeiU9xVyJ/qNcCMaq9yjDnKvmmY5BEnbykUEmn8GoKkeL/AIJLFr/37dNP/wAEX/0Wke2k3KMOaqed5jkEqd/JxQR6/wAWqSkZLad0HZHRKi1LL9ctOqVFxVqL/ptaFjPsa2HbJsee2S2YFZEkb6slRB5y9PjrKrlAz+lp4KWBsFNDHDExNGsjajWonwROQH6gRj3t93aPLoqnN8IpGx5ExqvraKNNEuCJ7TfCZE/H066KtRBKaOSGV8UrHRyMcrXtc1UVqouioqL0VPAqKQPXZrlX2e6010tdZNRV1LK2WCeF3C+N6LyVFIOhm61t7oNp9qbZL2+Giy6lj1liTRrK1idZYk8feZ26py6RpvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIx72+7tHl8VTm+EUjY8jY1X1tFGiI24InVzfCZE/H89FViIJSxyQyvilY6ORjla9jmqitVF0VFReiovY0j7BFLPOyCCN8ssjkYxjGq5znKuiIiJzVVXloBPLdG3eWYVDBmuZU7X5NIzWkpHc225rk01Xssyoqoq+yi6Jz1UyuJLBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIxb2+7tHl0NTm+EUjY8iY1X11FGmiXBETm5qdpkT8fTroq3Efruk7u8WGQU+a5pSslyWRiPpKR6Irbc1U6r4zKnVfZ6Jz1Ui4kwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//2Q=="); 
+                            })
+    
+                        } else {
+    
+                            if (response.data[0].ImageQuailtyLeft != '0' && response.data[0].ImageQuailtyRight != '0') {
+                                debugger;
+                                if (response.data[0].MessageQuailty == 'Success,High quality') {
+    
+                                    this.setState({
+                                        ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight,
+                                        ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft,
+                                        QialtyHide: true,
+                                        QialtyHide2: true,
+                                        DivMessgaBox: true,
+                                        ResponseMessageQuailityEyes: this.props.signatureweubQailitySuccess.value,
+                                        BlockedButtonSave : false,
+    
+    
+                                    }, () => {
+                                        this.props.ImageRightvalue.setValue(response.data[0].ImageRight);
+                                        this.props.ImageLeftvalue.setValue(response.data[0].ImageLeft);
+                                    })
+                                    if (response.data[0].ImageQuailtyRight == "110") {
+                                        this.setState({
+                                            DeqaIDRight: false,
+                                            QuiltyRight: "العين اليمنى مفقوده",
+                                            ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                        })
+                                    } else {
+                                        this.setState({
+                                            DeqaIDRight: true,
+                                            QuiltyRight: response.data[0].ImageQuailtyRight,
+                                            ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight,
+                                            BlockedButtonSave : false,
+                                        })
+    
+                                    }
+    
+                                    if (response.data[0].ImageQuailtyLeft == "110") {
+                                        this.setState({
+                                            DeqaIDLeft: false,
+                                            QuiltyLeft: "العين اليسرى مفقوده",
+                                            ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                            BlockedButtonSave : false,
+                                        })
+                                    } else {
+                                        this.setState({
+                                            DeqaIDLeft: true,
+                                            QuiltyLeft: response.data[0].ImageQuailtyLeft,
+                                            ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft,
+                                            BlockedButtonSave : false,
+                                        })
+    
+                                    }
+    
+                                } else {
+                                    this.setState({
+                                        ImageIRIS_Right: "data:image/png;base64" + response.data[0].ImageRight,
+                                        ImageIRIS_Left: "data:image/png;base64" + response.data[0].ImageLeft,
+                                        QialtyHide: true,
+                                        QialtyHide2: true,
+                                        DivMessgaBox: true,
+                                        ResponseMessageQuailityEyes: this.props.signaturewebQuailityFailed.value,
+                                            BlockedButtonSave : false,
+                                    })
+    
+                                    if (response.data[0].ImageQuailtyRight == "110") {
+                                        this.setState({
+                                            DeqaIDRight: false,
+                                            QuiltyRight: "العين اليمنى مفقوده",
+                                            BlockedButtonSave : false,
+                                            ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                        })
+    
+    
+                                    } else {
+                                        this.setState({
+                                            DeqaIDRight: true,
+                                            QuiltyRight: response.data[0].ImageQuailtyRight,
+                                            BlockedButtonSave : false,
+                                            ImageIRIS_Right: "data:image/png;base64," + response.data[0].ImageRight
+                                        })
+    
+                                    }
+    
+                                    if (response.data[0].ImageQuailtyLeft == "110") {
+                                        this.setState({
+                                            DeqaIDLeft: false,
+                                            QuiltyLeft: "العين اليسرى مفقوده",
+                                                BlockedButtonSave : false,
+                                            ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$BlocksEysPrint.jpg`,
+                                        })
+    
+                                    } else {
+                                        this.setState({
+                                            DeqaIDLeft: true,
+                                            QuiltyLeft: response.data[0].ImageQuailtyLeft,
+                                            BlockedButtonSave : false,
+                                            ImageIRIS_Left: "data:image/png;base64," + response.data[0].ImageLeft
+                                        })
+                                    }
+    
+                                }
+    
+                            } else {
+                                this.setState({
+                                    DivMessgaBox: true,
+                                    ShowpageloaddivRight: false,
+                                    ShowpageloaddivLeft: false,
+                                    ImageIRIS_Right: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
+                                    ImageIRIS_Left: `./img/${this.props.ModuleName.value}$${this.props.ImageCollection.value}$Iris2Widget.jpg`,
+                                    QuiltyRight: "",
+                                    QuiltyLeft: "",
+                                    QialtyHide: false,
+                                    QialtyHide2: false,
+                                    BlockedButtonSave : false,
+                                    ResponseMessageQuailityEyes: this.props.signaturewebTimeout.value
+                                })
+    
+                            }
+    
+                        }
+    
+    
+    
+    
+                    }
+                    else{
+    
+                        this.setState({
+                            NonError : true,
+                            ShowpageloaddivLeft: false,
+                            ShowpageloaddivRight: false, 
+                            ResponseMessageQuailityEyes: "",
+                            DivMessgaBox: false,
+                            QuiltyRight: "",
+                            QuiltyLeft: "",
+                            QialtyHide: false,
+                            QialtyHide2: false , 
+                            BlockedButtonSave : false,
+                        },()=>{
+    
+                            alert("الرجاء قم  بتوصيل الجهاز بالكمبيوتر");
+                        })
+     
+                    }
+                    console.log(response.data)
+                }
+    
+                ).catch(error => {
+                    this.setState({
+                        BlockedButtonSave : false,
+                    },()=>{
+                        if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+                            window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
+                        }
+                    })
+                  
+                }
+                )
+           
+       
+    }
 
 
     render() {
         return (
             <div className="container">
-           
-                <div class="row">
+
+                {/* <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 header">
                         <img src="./img/Service$ImageIntegration$IraqLogo.png" />
                     </div>
-                </div>
+                </div> */}
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -268,7 +365,7 @@ export class IRISWeb extends Component {
                             <option value="1">العــين اليســرى</option>
                             <option value="0">العـــين اليمــنى</option>
                             <option value="2" selected>كلـــتا العينــين</option>
-                            <option value="3" >عيــون مفقـوده</option>
+                            {/* <option value="3" >عيــون مفقـوده</option> */}
                         </select>
                     </div>
                 </div>
@@ -286,21 +383,21 @@ export class IRISWeb extends Component {
                         <div id="rcorners">العـــين اليمــنى</div>
                         {/* <img id="IMAGE_IRIS_LEFT" alt="" className="borderSstyle" width="280" height="240" style={{ border: "1px soild #000000", borderRadius: "0px 0px 25px 25px", marginTop: "-1px" }} /> */}
                         <img src={this.state.ImageIRIS_Right} id="IMAGE_IRIS_LEFT" alt="" className="borderSstyle" width="280" height="240" style={{ border: "1px soild #000000", borderRadius: "0px 0px 25px 25px", marginTop: "-1px" }} />
-                        
+
                         <div className="row IrisQuilty ">
-                        <div class="col-xs-12 col-sm-12 col-md-12">
-                        {this.state.QialtyHide ? (
-                            <div id="QialtyHide">
-                                {this.state.DeqaIDRight ? (
-                                    <h4 id="DeqaIDRight" style={{ fontWeight: 'bold' }} >الدقــــة &nbsp;&nbsp; </h4>
-                                ) : ('')}
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                {this.state.QialtyHide ? (
+                                    <div id="QialtyHide">
+                                        {this.state.DeqaIDRight ? (
+                                            <h4 id="DeqaIDRight" style={{ fontWeight: 'bold' }} >الدقــــة &nbsp;&nbsp; </h4>
+                                        ) : ('')}
 
-                                <h4 id="QuiltyRight" style={{ fontWeight: 'bold', color: 'brown', fontSize: "20px" }} > {this.state.QuiltyRight}</h4>
+                                        <h4 id="QuiltyRight" style={{ fontWeight: 'bold', color: 'brown', fontSize: "20px" }} > {this.state.QuiltyRight}</h4>
 
-                            </div>) : ('')}
-                    </div>
+                                    </div>) : ('')}
+                            </div>
                         </div>
-                        
+
                     </div>
                     <div class="col-xs-4 col-sm-4 col-md-4">
                         <div className="img_camera">
@@ -313,33 +410,43 @@ export class IRISWeb extends Component {
                                         style={{ border: "1px soild #000000", borderRadius: "0px 0px 25px 25px", marginTop: "-1px" }} /> */}
                         <img src={this.state.ImageIRIS_Left} id="IMAGE_IRIS_RIGHT" alt="" className="borderSstyle" width="280" height="240" style={{ border: "1px soild #000000", borderRadius: "0px 0px 25px 25px", marginTop: "-1px" }} />
                         <div className="row IrisQuilty">
-                        <div class="col-xs-12 col-sm-12 col-md-12">
-                        {this.state.QialtyHide2 ? (
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                {this.state.QialtyHide2 ? (
 
-                            <div id="QialtyHide2"  >
-                                {this.state.DeqaIDLeft ? (
-                                    <h4 id="DeqaIDLeft" style={{ fontWeight: 'bold' }}>الدقــــة &nbsp; &nbsp; </h4>
+                                    <div id="QialtyHide2"  >
+                                        {this.state.DeqaIDLeft ? (
+                                            <h4 id="DeqaIDLeft" style={{ fontWeight: 'bold' }}>الدقــــة &nbsp; &nbsp; </h4>
+                                        ) : ('')}
+
+                                        <h4 id="QuiltyLeft"
+                                            style={{ fontWeight: 'bold', color: 'brown', fontSize: "20px" }}>{this.state.QuiltyLeft} </h4>
+
+
+                                    </div>
                                 ) : ('')}
-
-                                <h4 id="QuiltyLeft"
-                                    style={{ fontWeight: 'bold', color: 'brown', fontSize: "20px" }}>{this.state.QuiltyLeft} </h4>
-
-
                             </div>
-                        ) : ('')}
-                    </div>
                         </div>
                     </div>
                     <div class="col-xs-3 col-sm-3 col-md-3">
-                        <button type="button" id="EyeCaptureButton" disabled={this.props.EnableButtonCapture.value == 'true' ? true :false} onClick={() => this.CaptureEyes()} className="btn btn-success btn-block">التقاط بصمه العين <h3 className="SaveCapture"> <AiFillCamera style={{color:'#9e8615'}} /> </h3></button>
+                        <button type="button" id="EyeCaptureButton" disabled={this.state.BlockedButtonSave} style={{visibility:this.props.EnableButtonCapture.value == 'false' ? "hidden" : "visible" , justifyContent:'center' }} onClick={() => this.CaptureEyes()} className="btn btn-success btn-block">التقاط بصمه العين <h3 className="SaveCapture"> <AiFillCamera style={{ color: '#9e8615' }} /> </h3></button>
 
-                        <button type="button" id="SaveEyeButton" disabled={this.props.EnableButtonSave.value == 'true' ? true :false}  onClick={() => this.SaveCaptureEyes()} className="btn btn-success btn-block ">حفظ بصمات العين <h3 className="SaveCapture"> <AiFillSave style={{color:'#9e8615'}} /> </h3></button>
+                        <button type="button" id="SaveEyeButton"
+                        
+                        style={{visibility:this.props.EnableButtonSave.value == 'false' ? "hidden" : "visible" , justifyContent:'center' }} onClick={() => this.SaveCaptureEyes()} className="btn  btn-block ">حفظ بصمات العين <h3 className="SaveCapture"> <AiFillSave style={{ color: '#9e8615' }} /> </h3></button>
 
-                        <button type="button" id="EyeVeryfiyButton" disabled={this.props.EnableButtonVerify.value == 'true' ? true :false}   className="btn btn-success btn-block ">التحقق من بصمه العين <h3 className="CheckIris"> <AiOutlineCheckCircle style={{color:'#9e8615'}} /> </h3> </button>
+                        <button type="button" id="EyeVeryfiyButton" disabled={this.state.BlockedButtonVirfy}
+                        style={{visibility:this.props.EnableButtonVerify.value == 'false' ? "hidden" : "visible" , justifyContent:'center'}}
+                        onClick={() =>  this.VerfiyCaptureEyes()} className="btn btn-block ">التحقق من بصمه العين <h3 className="CheckIris">
+                             {/* <AiOutlineCheckCircle style={{ color: '#9e8615' }} />  */}
+                             </h3> </button>
+
+                             <button type="button" style={{justifyContent:'center'}} id="EyeVeryfiyButton"  onClick={() => this.ClosePage()} className="btn btn-block ">الغــاء<h3 className="CheckIris">
+                             {/* <AiOutlineCheckCircle style={{ color: '#9e8615' }} />  */}
+                             </h3> </button>
 
                     </div>
                 </div>
-                 
+
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -354,16 +461,129 @@ export class IRISWeb extends Component {
                         ) : ('')}
                     </div>
                 </div>
- 
+
             </div>
         );
     }
 
+    ClosePage()
+    {
+
+        if (this.props.onClickActionClose && this.props.onClickActionClose.canExecute) {
+    
+            this.props.onClickActionClose.execute();
+        }
+
+    }
+
+    VerfiyCaptureEyes() {
+
+       
+        if (this.state.IS_CAPTURE == true && this.state.NonError == false) {
+            if(this.props.ImageRightvalue.value || this.props.ImageLeftvalue.value)
+            {
+                this.setState({
+                    ListImageDelvier: [] , 
+                    BlockedButtonVirfy : true,
+                }, () => {
+                    if (this.props.onClickActionDeliver && this.props.onClickActionDeliver.canExecute) {
+                        debugger;
+         
+                        var RightEyeFromSytem = this.props.ImageRightvalueSystem.value;
+                        var LeftEyeFromSystem = this.props.ImageLeftvalueSystem.value;
+                        var RightEyeFromDevice = this.props.ImageRightvalue.value;
+                        var LeftEyeFromDevice = this.props.ImageRightvalue.value;
+        
+        
+                        this.state.ListImageDelvier.push(LeftEyeFromSystem);
+                        this.state.ListImageDelvier.push(RightEyeFromSytem);
+                        this.state.ListImageDelvier.push(LeftEyeFromDevice);
+                        this.state.ListImageDelvier.push(RightEyeFromDevice);
+        
+                        axios.post(this.state.UrlVerifyCapture, this.state.ListImageDelvier)
+                            .then(response => {
+                                
+                                if (response.data == 'true') {
+                                    this.props.EyesIsMatching.setValue(true);
+                                    this.props.onClickActionDeliver.execute();
+                                    this.setState({
+                                        DivMessgaBox : true,
+                                        ResponseMessageQuailityEyes : "البصمات  متطابقة" ,
+                                        BlockedButtonVirfy : false,
+                                    })
+    
+                                } else {
+                                    this.props.EyesIsMatching.setValue(false);
+                                    this.props.onClickActionDeliver.execute();
+                                    this.setState({
+                                        DivMessgaBox : true,
+                                        ResponseMessageQuailityEyes : "البصمات غير متطابقة" ,
+                                        BlockedButtonVirfy : false,
+                                    })
+                              
+        
+                                }
+        
+                            }).catch(error => {
+                                this.setState({
+                                    BlockedButtonVirfy : false,
+                                },()=>{
+                                    alert(error);
+                                })
+                              
+                            });
+                    }
+        
+        
+                })
+
+            }
+            else
+        {
+            this.setState({
+                BlockedButtonVirfy : false,
+            },()=>{
+                alert("يرجى الالتقاط اولا "); 
+            })
+           
+        }
+            
+
+        }else
+        {
+            this.setState({
+                BlockedButtonVirfy : false,
+            },()=>{
+                alert("يرجى الالتقاط اولا "); 
+            })
+           
+        }
+       
+
+    }
+
     SaveCaptureEyes() {
         debugger;
-        if (this.props.onClickAction && this.props.onClickAction.canExecute) {
+        if (this.state.IS_CAPTURE == true && this.state.NonError == false) {
+            
+            if(this.props.ImageRightvalue.value || this.props.ImageLeftvalue.value)
+            {
+                if (this.props.onClickAction && this.props.onClickAction.canExecute) {
 
-            this.props.onClickAction.execute();
+                    this.props.onClickAction.execute();
+                }
+
+            }else
+            {
+                alert("يرجى الالتقاط اولا "); 
+                
+            }
+           
+
+        }else
+        {
+            alert("يرجى الالتقاط اولا "); 
         }
+       
     }
 }
