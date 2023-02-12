@@ -31,6 +31,8 @@ export class IRISWeb extends Component {
             NonError : false , 
             BlockedButtonSave : false,
             BlockedButtonVirfy : false,
+            BLockedbuttonClose : false , 
+            BlockedWhenave : false
         }
         //  this.SaveCaptureEyes = this.onClick.bind(this);
 
@@ -59,41 +61,35 @@ export class IRISWeb extends Component {
     }
 
     
-      
-    handleTabClose =()=>{
-    alert("ddd");
-    }
-
-
     componentDidMount() {
  
         debugger;
         //  document.getElementById("EyeCaptureButton").disabled = this.props.value;
 
-        axios.get(this.state.WindowsApiUrlOpenDevice_Capture)
-            .then(response => {
+        // axios.get(this.state.WindowsApiUrlOpenDevice_Capture)
+        //     .then(response => {
 
-                if (response.data[0] == 'ConnectionSuccssfult') {
-                    // alert("تم تشغيل الكاميرا بنجاح");
-                } else if (response.data[0] == 'IS_ERROR_ALREADY_OPEN') {
-                    // alert("الكاميرا حاليا في وضع التشغيل");
-                } else if (response.data[0] == 'IS_ERROR_NONE') {
-                    // alert("الكاميرا حاليا في وضع التشغيل");
-                }
-                else {
-                    if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
-                        window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
-                    }
+        //         if (response.data[0] == 'ConnectionSuccssfult') {
+        //             // alert("تم تشغيل الكاميرا بنجاح");
+        //         } else if (response.data[0] == 'IS_ERROR_ALREADY_OPEN') {
+        //             // alert("الكاميرا حاليا في وضع التشغيل");
+        //         } else if (response.data[0] == 'IS_ERROR_NONE') {
+        //             // alert("الكاميرا حاليا في وضع التشغيل");
+        //         }
+        //         else {
+        //             if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+        //                 window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
+        //             }
 
-                }
-            }
+        //         }
+        //     }
 
-            ).catch(error => {
-                if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
-                    window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
-                }
-            }
-            )
+        //     ).catch(error => {
+        //         if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+        //             window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
+        //         }
+        //     }
+        //     )
 
     }
 
@@ -136,8 +132,12 @@ export class IRISWeb extends Component {
             QialtyHide2: false,
             BlockedButtonSave : true,
         },()=>{
-        })
+            axios.get(this.state.WindowsApiUrlOpenDevice_Capture)
+            .then(response => {
 
+                if (response.data[0] == 'ConnectionSuccssfult') {
+                    // alert("تم تشغيل الكاميرا بنجاح");
+                    
             this.props.ImageRightvalue.setValue("");
             this.props.ImageLeftvalue.setValue("");
              
@@ -345,6 +345,30 @@ export class IRISWeb extends Component {
                 }
                 )
            
+                } else if (response.data[0] == 'IS_ERROR_ALREADY_OPEN') {
+                    // alert("الكاميرا حاليا في وضع التشغيل");
+                } else if (response.data[0] == 'IS_ERROR_NONE') {
+                    // alert("الكاميرا حاليا في وضع التشغيل");
+                }
+                else {
+                    if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+                        window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
+                    }
+
+                }
+
+
+
+            }
+
+            ).catch(error => {
+                if (confirm("قد يكون الجهاز غير متوفر او الخدمة متوقفة أو أنه لم يتم تثبيتها . هل تود تحميل تعريف الإصدار الأحدث من الخدمة؟")) {
+                    window.open("./WindowsServices/IRISCameraWinSetup.msi", "_base");
+                }
+            }
+            )
+        })
+
        
     }
 
@@ -428,19 +452,19 @@ export class IRISWeb extends Component {
                         </div>
                     </div>
                     <div class="col-xs-3 col-sm-3 col-md-3">
-                        <button type="button" id="EyeCaptureButton" disabled={this.state.BlockedButtonSave} style={{visibility:this.props.EnableButtonCapture.value == 'false' ? "hidden" : "visible" , justifyContent:'center' }} onClick={() => this.CaptureEyes()} className="btn btn-success btn-block">التقاط بصمه العين <h3 className="SaveCapture"> <AiFillCamera style={{ color: '#9e8615' }} /> </h3></button>
+                        <button type="button" id="EyeCaptureButton" disabled={this.state.BlockedButtonSave} style={{display:this.props.EnableButtonCapture.value == 'false' ? "none" : "inline-flex" , justifyContent:'center' }} onClick={() => this.CaptureEyes()} className="btn btn-success btn-block">التقاط بصمه العين <h3 className="SaveCapture"> <AiFillCamera style={{ color: '#9e8615' }} /> </h3></button>
 
                         <button type="button" id="SaveEyeButton"
                         
-                        style={{visibility:this.props.EnableButtonSave.value == 'false' ? "hidden" : "visible" , justifyContent:'center' }} onClick={() => this.SaveCaptureEyes()} className="btn  btn-block ">حفظ بصمات العين <h3 className="SaveCapture"> <AiFillSave style={{ color: '#9e8615' }} /> </h3></button>
+                        style={{display:this.props.EnableButtonSave.value == 'false' ? "none" : "inline-flex" , justifyContent:'center' }} disabled={this.state.BlockedWhenave} onClick={() => this.SaveCaptureEyes()} className="btn  btn-block ">حفظ بصمات العين <h3 className="SaveCapture"> <AiFillSave style={{ color: '#9e8615' }} /> </h3></button>
 
                         <button type="button" id="EyeVeryfiyButton" disabled={this.state.BlockedButtonVirfy}
-                        style={{visibility:this.props.EnableButtonVerify.value == 'false' ? "hidden" : "visible" , justifyContent:'center'}}
+                        style={{display:this.props.EnableButtonVerify.value == 'false' ? "none" : "inline-flex" , justifyContent:'center'}}
                         onClick={() =>  this.VerfiyCaptureEyes()} className="btn btn-block ">التحقق من بصمه العين <h3 className="CheckIris">
                              {/* <AiOutlineCheckCircle style={{ color: '#9e8615' }} />  */}
                              </h3> </button>
 
-                             <button type="button" style={{justifyContent:'center'}} id="EyeVeryfiyButton"  onClick={() => this.ClosePage()} className="btn btn-block ">الغــاء<h3 className="CheckIris">
+                             <button type="button" disabled={this.state.BLockedbuttonClose} style={{justifyContent:'center'}} id="EyeVeryfiyButton"  onClick={() => this.ClosePage()} className="btn btn-block ">الغــاء<h3 className="CheckIris">
                              {/* <AiOutlineCheckCircle style={{ color: '#9e8615' }} />  */}
                              </h3> </button>
 
@@ -471,7 +495,12 @@ export class IRISWeb extends Component {
 
         if (this.props.onClickActionClose && this.props.onClickActionClose.canExecute) {
     
-            this.props.onClickActionClose.execute();
+            this.setState({
+                BLockedbuttonClose  :true
+            },()=>{
+
+                this.props.onClickActionClose.execute();
+            })
         }
 
     }
@@ -567,10 +596,14 @@ export class IRISWeb extends Component {
         if (this.state.IS_CAPTURE == true && this.state.NonError == false) {
             
             if(this.props.ImageRightvalue.value || this.props.ImageLeftvalue.value)
-            {
+            { 
                 if (this.props.onClickAction && this.props.onClickAction.canExecute) {
-
-                    this.props.onClickAction.execute();
+                    this.setState({
+                        BlockedWhenave : true
+                    },()=>{
+                        this.props.onClickAction.execute();
+                    })
+                  
                 }
 
             }else
