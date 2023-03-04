@@ -35,6 +35,10 @@
     "axios": "^0.27.2",
     "classnames": "^2.2.6",
     "font-awesome": "^4.7.0",
-    "react-icons": "^4.4.0"
+    "react-alert-with-buttons": "^0.0.18",
+    "react-confirm-alert": "^3.0.6",
+    "react-confirm-toast": "^1.0.7",
+    "react-icons": "^4.4.0",
+    "react-toastify": "^9.1.1"
   }
 }
